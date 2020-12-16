@@ -5,6 +5,6 @@ addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(style)
     const csp = document.createElement("meta")
     csp.httpEquiv = "Content-Security-Policy"
-    csp.content="default-src https://*.nicovideo.jp https://*.nimg.jp https://*.dmc.nico wss://*.nicovideo.jp blob:; style-src 'self' 'unsafe-inline' https://*.nimg.jp; img-src 'self' https://*.nimg.jp https://*.dmc.nico https://*.nicovideo.jp data:; script-src https://*.nimg.jp"
+    csp.content="default-src https://*.nicovideo.jp https://*.nimg.jp https://*.dmc.nico wss://*.nicovideo.jp blob:; style-src 'self' 'unsafe-inline' https://*.nimg.jp; img-src 'self' https://*.nimg.jp https://*.dmc.nico https://*.nicovideo.jp data:; script-src https://*.nimg.jp 'unsafe-eval' blob:"
     document.head.appendChild(csp)
 })
