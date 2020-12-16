@@ -1,6 +1,10 @@
 {
   "name": "sukelive",
   "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "electron ."
+  },
   "devDependencies": {
     "typescript": "^4.1.3"
   },

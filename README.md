@@ -14,3 +14,10 @@
 ## 注意点
 
 - フルスクリーンサイズ「モニターサイズ」は無効化されています
+
+## How to Run (Dev)
+
+- yarn install
+- yarn build
+- yarn start
+ 
