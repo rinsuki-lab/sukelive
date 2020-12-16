@@ -17,6 +17,7 @@ app.on("ready", () => {
         },
         width: 1280,
         height: 720,
+        useContentSize: true,
     })
     window.setAspectRatio(16/9) // Windows サポートがまだ see: https://github.com/electron/electron/pull/26941
     window.loadURL("https://jk.nicovideo.jp")
