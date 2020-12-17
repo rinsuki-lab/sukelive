@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, MenuItem } from "electron"
+import { app, BrowserWindow, dialog, Menu, MenuItem, shell } from "electron"
 
 app.on("ready", () => {
     const window = new BrowserWindow({
@@ -44,8 +44,62 @@ app.on("ready", () => {
     menu.append(new MenuItem({label: "jk.nicovideo.jpに戻る", click() {
         window.loadURL("https://jk.nicovideo.jp")
     }}))
+    async function confirm(type: "question", message: string, detail: string, okMessage: string) {
+        const res = await dialog.showMessageBox(window, {
+            type: "question",
+            message,
+            detail,
+            // TODO: Windows 環境に順番を合わせる
+            buttons: [okMessage, "キャンセル"],
+            defaultId: 0,
+            cancelId: 1,
+        })
+        return res.response === 0
+    }
+    window.webContents.on("new-window", (event, url) => {
+        event.preventDefault()
+        if (url.startsWith("http:") || url.startsWith("https:")) {
+            confirm(
+                "question",
+                "次のURLをブラウザで開きますか？",
+                url,
+                "開く"
+            ).then(result => {
+                if (result) {
+                    shell.openExternal(url)
+                }
+            })
+        }
+    })
     window.webContents.on("context-menu", (event) => {
         menu.popup({window})
+    })
+    window.webContents.on("will-navigate", (event, url) => {
+        if (!url.startsWith("http:") && !url.startsWith("https:")) {
+            event.preventDefault()
+        }
+        const urlObj = new URL(url)
+        const navigateAllowed = [
+            "live.nicovideo.jp",
+            "live2.nicovideo.jp",
+            "jk.nicovideo.jp",
+            "account.nicovideo.jp",
+            "premium.nicovideo.jp",
+        ]
+        if (!navigateAllowed.includes(urlObj.hostname)) {
+            event.preventDefault()
+            confirm(
+                "question",
+                "次のURLをブラウザで開きますか？",
+                url,
+                "開く"
+            ).then(result => {
+                if (result) {
+                    shell.openExternal(url)
+                }
+            })
+            return
+        }
     })
     window.setAspectRatio(16/9) // Windows サポートがまだ see: https://github.com/electron/electron/pull/26941
     window.loadURL("https://jk.nicovideo.jp")
