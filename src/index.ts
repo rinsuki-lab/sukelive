@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron"
+import { app, BrowserWindow, Menu, MenuItem } from "electron"
 
 app.on("ready", () => {
     const window = new BrowserWindow({
@@ -22,7 +22,11 @@ app.on("ready", () => {
     window.webContents.session.webRequest.onBeforeRequest({urls: ["*://*/*"]}, (details, cb) => {
         const url = details.url
         if (!url.startsWith("https:")) {
-            console.log(url)
+            if (url.startsWith("http:")) {
+                console.log("upgrade to https", url)
+                return cb({redirectURL: url.replace("http:", "https:")})
+            }
+            console.log("unknown", url)
             return cb({cancel: true})
         }
         const urlObj = new URL(url)
@@ -30,8 +34,18 @@ app.on("ready", () => {
         if (urlObj.hostname.endsWith(".nicovideo.jp")) return cb({cancel: false})
         if (urlObj.hostname.endsWith(".nimg.jp")) return cb({cancel: false})
         if (urlObj.hostname.endsWith(".simg.jp")) return cb({cancel: false})
-        console.log(details)
+        console.log("blocked", details)
         cb({cancel: true})
+    })
+    const menu = new Menu()
+    menu.append(new MenuItem({label: "常に前面に表示", type: "checkbox", click(item) {
+        window.setAlwaysOnTop(item.checked)
+    }}))
+    menu.append(new MenuItem({label: "jk.nicovideo.jpに戻る", click() {
+        window.loadURL("https://jk.nicovideo.jp")
+    }}))
+    window.webContents.on("context-menu", (event) => {
+        menu.popup({window})
     })
     window.setAspectRatio(16/9) // Windows サポートがまだ see: https://github.com/electron/electron/pull/26941
     window.loadURL("https://jk.nicovideo.jp")
