@@ -46,7 +46,7 @@ app.on("ready", () => {
     }}))
     async function confirm(type: "question", message: string, detail: string, okMessage: string) {
         const res = await dialog.showMessageBox(window, {
-            type: "question",
+            type,
             message,
             detail,
             // TODO: Windows 環境に順番を合わせる
@@ -56,20 +56,19 @@ app.on("ready", () => {
         })
         return res.response === 0
     }
+    async function confirmOpenInExternalBrowser(url: string) {
+        if (await confirm(
+            "question",
+            "次のURLをブラウザで開きますか？",
+            url,
+            "開く"
+        )) {
+            shell.openExternal(url)
+        }
+    }
     window.webContents.on("new-window", (event, url) => {
         event.preventDefault()
-        if (url.startsWith("http:") || url.startsWith("https:")) {
-            confirm(
-                "question",
-                "次のURLをブラウザで開きますか？",
-                url,
-                "開く"
-            ).then(result => {
-                if (result) {
-                    shell.openExternal(url)
-                }
-            })
-        }
+        if (url.startsWith("http:") || url.startsWith("https:")) confirmOpenInExternalBrowser(url)
     })
     window.webContents.on("context-menu", (event) => {
         menu.popup({window})
@@ -89,16 +88,7 @@ app.on("ready", () => {
         ]
         if (!navigateAllowed.includes(urlObj.hostname)) {
             event.preventDefault()
-            confirm(
-                "question",
-                "次のURLをブラウザで開きますか？",
-                url,
-                "開く"
-            ).then(result => {
-                if (result) {
-                    shell.openExternal(url)
-                }
-            })
+            confirmOpenInExternalBrowser(url)
             return
         }
     })
