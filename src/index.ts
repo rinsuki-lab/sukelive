@@ -29,6 +29,7 @@ app.on("ready", () => {
         if (urlObj.hostname.endsWith(".dmc.nico")) return cb({cancel: false})
         if (urlObj.hostname.endsWith(".nicovideo.jp")) return cb({cancel: false})
         if (urlObj.hostname.endsWith(".nimg.jp")) return cb({cancel: false})
+        if (urlObj.hostname.endsWith(".simg.jp")) return cb({cancel: false})
         console.log(details)
         cb({cancel: true})
     })
