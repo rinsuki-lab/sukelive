@@ -77,6 +77,7 @@ app.on("ready", () => {
     window.webContents.on("will-navigate", (event, url) => {
         if (!url.startsWith("http:") && !url.startsWith("https:")) {
             event.preventDefault()
+            return
         }
         const urlObj = new URL(url)
         const navigateAllowed = [
